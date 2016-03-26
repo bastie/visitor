@@ -13,7 +13,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 /**
- * 
+ * Our JavaFX Browser engine.
  * @author Sͬeͥbͭaͭsͤtͬian
  *
  */
@@ -39,15 +39,17 @@ public class Browser extends Region {
 			}
 
 		});
+		
+		// Load the welcome page
 		try {
 			webEngine.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
 		} catch (Exception ignored) {
 			webEngine.loadContent(ignored.getLocalizedMessage(), "text/plain");
 		}
 		
-		
 		this.getChildren().add(browser); // add the web view to the scene
 		
+		// Set our user agent property
 		this.webEngine.userAgentProperty().setValue(this.webEngine.userAgentProperty().get().replace("JavaFX/8.0", "Visitor/0.1"));
 	}
 	

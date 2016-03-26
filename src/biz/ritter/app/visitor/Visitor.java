@@ -18,25 +18,27 @@ public class Visitor {
 
 	private static void initAndShowGUI () {
 		final JFrame frame = new JFrame("Visitor");
+		// use the JFXPanel to embedded the Browser engine
 		final JFXPanel fxPanel = new JFXPanel();
 		frame.add(fxPanel);
 		frame.setSize(800,600);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
+		/* Embedded our Browser engine. It is with Java 8 the WebKit engine */
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				initFX(fxPanel);
+				Scene scene = new Scene(new Browser(),750,500, Color.web("#666970"));
+				fxPanel.setScene(scene);
 			}
 		});
 	}
 	
-	private static void initFX(JFXPanel fxPanel) {
-		Scene scene = new Scene(new Browser(),750,500, Color.web("#666970"));
-		fxPanel.setScene(scene);
-	}
-
-	public static void main(String[] args) {
+	/**
+	 * Start the Visitor Browser application
+	 * @param ignored
+	 */
+	public static void main(String[] ignored) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override public void run() {
 				initAndShowGUI();
