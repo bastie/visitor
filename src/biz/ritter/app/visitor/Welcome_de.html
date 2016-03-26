@@ -1,0 +1,32 @@
+<html>
+<head>
+<script type="text/javascript">
+  var handler;
+
+  function setRequestHandler () {
+	  if (-1 == navigator.userAgent.search("Visitor")) {
+		  handler = new XMLHttpRequest();
+	  }
+	  else {
+		  handler = localXMLHttpRequest;
+	  }
+  }
+  
+  function sendData() {
+	  if (handler === undefined) setRequestHandler();
+	  
+	  var xmlRequest = handler;
+	  handler.open("POST", "<?xml version='1.0' ?><request>Tell me</request>");
+	  handler.send("Here I am");
+	  handler.close();
+  }
+  
+</script>
+
+</head>
+<body>
+  <h1>Visitor</h1>
+  <small><i>Swing basierter Browser mit eingebettetem JavaFX.</i></small>
+  <button onclick="sendData()">Verwendung eines (vielleicht) lokalen XMLHttpRequest Objekts</button>
+</body>
+</html>
