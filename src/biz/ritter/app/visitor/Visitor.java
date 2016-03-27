@@ -28,8 +28,16 @@ public class Visitor {
 		/* Embedded our Browser engine. It is with Java 8 the WebKit engine */
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				Scene scene = new Scene(new Browser(),750,500, Color.web("#666970"));
+				Browser browser = new Browser();
+				Scene scene = new Scene(browser,750,500, Color.web("#666970"));
 				fxPanel.setScene(scene);
+				// Load the welcome page
+				try {
+					browser.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
+				} catch (Exception ignored) {
+					//webEngine.loadContent(ignored.getLocalizedMessage(), "text/plain");
+				}
+				
 			}
 		});
 	}

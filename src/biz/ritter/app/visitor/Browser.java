@@ -40,13 +40,6 @@ public class Browser extends Region {
 
 		});
 		
-		// Load the welcome page
-		try {
-			webEngine.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
-		} catch (Exception ignored) {
-			webEngine.loadContent(ignored.getLocalizedMessage(), "text/plain");
-		}
-		
 		this.getChildren().add(browser); // add the web view to the scene
 		
 		// Set our user agent property
@@ -68,5 +61,12 @@ public class Browser extends Region {
 		return 500;
 	}
 		
+	/**
+	 * Load new site
+	 * @param url
+	 */
+	public void load (String url) {
+		this.webEngine.load(url);
+	}
 }
 
