@@ -5,7 +5,14 @@ import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 /**
@@ -15,12 +22,32 @@ import javax.swing.SwingUtilities;
  *
  */
 public class Visitor {
+	
+	private static Browser webEngine;
 
 	private static void initAndShowGUI () {
+		
 		final JFrame frame = new JFrame("Visitor");
-		// use the JFXPanel to embedded the Browser engine
+		frame.setLayout(new BorderLayout());
+		
+		// NORTH
+		JPanel northPanel = new JPanel(new GridLayout(1, 50));
+		JTextField searchText = new JTextField ("Search Visitor");
+		searchText.addKeyListener(new KeyAdapter() {
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+			if (java.awt.event.KeyEvent.VK_ENTER == e.getKeyCode()) {
+				if (searchText.getText().length()>0)
+					Visitor.webEngine.loadFromSwing("https://www.google.com/search?q="+searchText.getText());
+			}
+		}});
+		northPanel.add(searchText);
+		frame.add(northPanel, BorderLayout.NORTH);
+		
+		// CENTER use the JFXPanel to embedded the Browser engine
 		final JFXPanel fxPanel = new JFXPanel();
-		frame.add(fxPanel);
+		frame.add(fxPanel, BorderLayout.CENTER);
 		frame.setSize(800,600);
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,12 +55,12 @@ public class Visitor {
 		/* Embedded our Browser engine. It is with Java 8 the WebKit engine */
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				Browser browser = new Browser();
-				Scene scene = new Scene(browser,750,500, Color.web("#666970"));
+				Visitor.webEngine  = new Browser();
+				Scene scene = new Scene(Visitor.webEngine,750,500, Color.web("#666970"));
 				fxPanel.setScene(scene);
 				// Load the welcome page
 				try {
-					browser.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
+					Visitor.webEngine.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
 				} catch (Exception ignored) {
 					//webEngine.loadContent(ignored.getLocalizedMessage(), "text/plain");
 				}

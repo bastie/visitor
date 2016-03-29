@@ -1,7 +1,7 @@
 package biz.ritter.app.visitor;
 
 import netscape.javascript.JSObject;
-
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Worker;
@@ -67,6 +67,19 @@ public class Browser extends Region {
 	 */
 	public void load (String url) {
 		this.webEngine.load(url);
+	}
+	
+	/**
+	 * Load new site from Swing / AWT Applications
+	 * @param url
+	 */
+	public void loadFromSwing (final String url) {
+		Platform.runLater(new Runnable() {
+			@Override public void run() {
+				Browser.this.load(url);
+				
+			}
+		});
 	}
 }
 
