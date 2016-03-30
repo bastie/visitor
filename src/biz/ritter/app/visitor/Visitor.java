@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -32,16 +33,18 @@ public class Visitor {
 		
 		// NORTH
 		JPanel northPanel = new JPanel(new GridLayout(1, 50));
+		JPanel leftFillerPanel = new JPanel();
+		leftFillerPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 0));
 		JTextField searchText = new JTextField ("Search Visitor");
 		searchText.addKeyListener(new KeyAdapter() {
 		@Override
 		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
 			if (java.awt.event.KeyEvent.VK_ENTER == e.getKeyCode()) {
 				if (searchText.getText().length()>0)
 					Visitor.webEngine.loadFromSwing("https://www.google.com/search?q="+searchText.getText());
 			}
 		}});
+		northPanel.add(leftFillerPanel);
 		northPanel.add(searchText);
 		frame.add(northPanel, BorderLayout.NORTH);
 		

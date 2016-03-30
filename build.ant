@@ -11,7 +11,7 @@
             <manifest>
                 <attribute name="Main-Class" value="biz.ritter.app.visitor.Visitor"/>
                 <attribute name="Class-Path" value="."/>
-            	<attribute name="Version" value="0.1"/>
+            	<attribute name="Version" value="0.1.1.0"/>
             </manifest>
             <fileset dir="${dir.buildfile}/bin"/>
         </jar>
