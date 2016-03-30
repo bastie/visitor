@@ -7,10 +7,20 @@ import javafx.scene.paint.Color;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -24,29 +34,91 @@ import javax.swing.SwingUtilities;
  */
 public class Visitor {
 	
-	private static Browser webEngine;
+	private Browser webEngine;
+	
+	private JButton[] macCloseMinMax = new JButton[]{}; 
 
-	private static void initAndShowGUI () {
+	private void initAndShowGUI () {
 		
 		final JFrame frame = new JFrame("Visitor");
+		if ("Mac OS X".equals(System.getProperty("os.name", ""))) {
+			frame.setUndecorated(false); 
+			this.macCloseMinMax = new JButton[]{
+					new JButton(),
+					new JButton(),
+					new JButton()
+			};
+			for (JButton b : this.macCloseMinMax) { // TODO fix this hint
+				b.setMaximumSize(new Dimension(10,10));
+				b.setMinimumSize(new Dimension(10, 10));
+				b.setPreferredSize(new Dimension(10, 10));
+			}
+			this.macCloseMinMax[0].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+				}
+			});
+			this.macCloseMinMax[1].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					frame.setState(JFrame.ICONIFIED);
+				}
+			});
+			this.macCloseMinMax[2].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(frame.getExtendedState()==JFrame.NORMAL)
+					    frame.setExtendedState(JFrame.MAXIMIZED_BOTH);					
+					    else
+					    frame.setExtendedState(JFrame.NORMAL);				}
+			});
+		}
 		frame.setLayout(new BorderLayout());
+
+		// North
+		JPanel ctrlPanel = new JPanel (new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 0d, 0d, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0,2,2,0), 0, 0);
+		for (JButton b : this.macCloseMinMax) {
+			ctrlPanel.add(b,gbc);
+			gbc.gridx++;
+		}
+		ctrlPanel.add(new JButton("<"),gbc);
 		
-		// NORTH
-		JPanel northPanel = new JPanel(new GridLayout(1, 50));
-		JPanel leftFillerPanel = new JPanel();
-		leftFillerPanel.setPreferredSize(new Dimension(Integer.MAX_VALUE, 0));
-		JTextField searchText = new JTextField ("Search Visitor");
-		searchText.addKeyListener(new KeyAdapter() {
+		gbc.gridx++;
+		ctrlPanel.add(new JButton(">"),gbc);
+		
+		gbc.gridx++;
+		ctrlPanel.add(new JButton("oo"),gbc);
+		
+		gbc.gridx++;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1d;
+		JTextField inputField = new JTextField(300);
+		inputField.addKeyListener(new KeyAdapter() {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			if (java.awt.event.KeyEvent.VK_ENTER == e.getKeyCode()) {
-				if (searchText.getText().length()>0)
-					Visitor.webEngine.loadFromSwing("https://www.google.com/search?q="+searchText.getText());
+				if (inputField.getText().length()>0)
+					try {
+						new URL(inputField.getText());
+						Visitor.this.webEngine.loadFromSwing(inputField.getText());
+					}
+					catch (MalformedURLException goToSearchEngine) { 
+						Visitor.this.webEngine.loadFromSwing("https://www.google.com/search?q="+inputField.getText());
+					}
 			}
 		}});
-		northPanel.add(leftFillerPanel);
-		northPanel.add(searchText);
-		frame.add(northPanel, BorderLayout.NORTH);
+		ctrlPanel.add(inputField,gbc);
+
+		gbc.gridx++;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0d;
+		ctrlPanel.add(new JButton ("Senden"),gbc);
+		
+		gbc.gridx++;
+		ctrlPanel.add(new JButton ("Seitenleiste"),gbc);
+		frame.add(ctrlPanel, BorderLayout.NORTH);
 		
 		// CENTER use the JFXPanel to embedded the Browser engine
 		final JFXPanel fxPanel = new JFXPanel();
@@ -58,18 +130,21 @@ public class Visitor {
 		/* Embedded our Browser engine. It is with Java 8 the WebKit engine */
 		Platform.runLater(new Runnable() {
 			@Override public void run() {
-				Visitor.webEngine  = new Browser();
-				Scene scene = new Scene(Visitor.webEngine,750,500, Color.web("#666970"));
+				Visitor.this.webEngine  = new Browser();
+				Scene scene = new Scene(Visitor.this.webEngine,750,500, Color.web("#666970"));
 				fxPanel.setScene(scene);
 				// Load the welcome page
 				try {
-					Visitor.webEngine.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
+					Visitor.this.webEngine.load(this.getClass().getResource("Welcome_de.html").toURI().toURL().toString());
 				} catch (Exception ignored) {
 					//webEngine.loadContent(ignored.getLocalizedMessage(), "text/plain");
 				}
 				
 			}
 		});
+
+	
+	
 	}
 	
 	/**
@@ -79,7 +154,8 @@ public class Visitor {
 	public static void main(String[] ignored) {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override public void run() {
-				initAndShowGUI();
+				Visitor ui = new Visitor();
+				ui.initAndShowGUI();
 			}
 		});
 	}
