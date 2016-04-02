@@ -7,10 +7,8 @@ import javafx.scene.paint.Color;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,11 +18,15 @@ import java.awt.event.WindowEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.JToggleButton;
 
 /**
  * The Visitor!
@@ -36,11 +38,12 @@ public class Visitor {
 	
 	private Browser webEngine;
 	
-	private JButton[] macCloseMinMax = new JButton[]{}; 
+	private JButton[] macCloseMinMax = new JButton[]{};
+	private final JFrame frame = new JFrame("Visitor");
 
 	private void initAndShowGUI () {
 		
-		final JFrame frame = new JFrame("Visitor");
+		
 		if ("Mac OS X".equals(System.getProperty("os.name", ""))) {
 			frame.setUndecorated(false); 
 			this.macCloseMinMax = new JButton[]{
@@ -89,7 +92,21 @@ public class Visitor {
 		ctrlPanel.add(new JButton(">"),gbc);
 		
 		gbc.gridx++;
-		ctrlPanel.add(new JButton("oo"),gbc);
+		JToggleButton sideBarToogle = new JToggleButton("oo");
+		sideBarToogle.addActionListener(new ActionListener() {
+			@Override public void actionPerformed(ActionEvent e) {
+				if (e.getSource() instanceof AbstractButton) { //defensive programming 
+					final boolean sideBarNeedToShow = ((AbstractButton) e.getSource()).getModel().isSelected();
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override public void run() {
+							Visitor.this.setSidebarVisible(sideBarNeedToShow);
+							Visitor.this.frame.validate();
+						}
+					});
+				}
+			}
+		});;
+		ctrlPanel.add(sideBarToogle,gbc);
 		
 		gbc.gridx++;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -142,11 +159,32 @@ public class Visitor {
 				
 			}
 		});
-
-	
 	
 	}
 	
+	
+	private JTabbedPane sideBar;
+	protected void setSidebarVisible(boolean sideBarNeedToShow) {
+		if (null == sideBar) {
+			sideBar = new JTabbedPane(JTabbedPane.TOP);
+			JPanel favoritSideBar = new JPanel(new BorderLayout());
+			favoritSideBar.setMinimumSize(new Dimension(400, 100));
+			favoritSideBar.setMinimumSize(favoritSideBar.getMinimumSize());
+			JList<Object> favoritList = new JList<>(new Object[]{"Blub blob blub"});
+			favoritSideBar.add(favoritList, BorderLayout.CENTER);
+			sideBar.addTab("F", favoritSideBar);
+		}
+		
+		if (sideBarNeedToShow) {
+			this.frame.add(this.sideBar,BorderLayout.WEST);
+		}
+		else {
+			this.frame.remove(this.sideBar);
+			this.sideBar = null;
+		}
+	}
+	
+
 	/**
 	 * Start the Visitor Browser application
 	 * @param ignored
